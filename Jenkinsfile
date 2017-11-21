@@ -20,6 +20,7 @@
         sh "docker rm -f it_cd-demo_${BUILD_NUMBER} || true"
         sh "docker ps -aq | xargs docker rm || true"
         sh "docker images -aq -f dangling=true | xargs docker rmi || true"
+        sh "docker rmi it/cd-demo:${BUILD_NUMBER}"
       }
     }
     stage("Build Dev version") {
@@ -71,7 +72,7 @@
         // run some final tests in production
         checkout scm
         sh '''
-          sleep 60s 
+          sleep 30s 
           for i in `seq 1 20`;
           do
             STATUS=$(docker service inspect --format '{{ .UpdateStatus.State }}' cd-demo)
