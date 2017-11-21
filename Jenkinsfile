@@ -1,4 +1,4 @@
-  env.DOCKERHUB_USERNAME = 'vipconsult'
+  env.DOCKERHUB_USERNAME = 'dearrudam'
 
   node("docker-test") {
     checkout scm
@@ -25,11 +25,11 @@
     stage("Build") {
       sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER} ."
     }
-    stage("Publish") {
-      withDockerRegistry([credentialsId: 'DockerHub']) {
-        sh "docker push ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER}"
-      }
-    }
+    //stage("Publish") {
+    //  withDockerRegistry([credentialsId: 'DockerHub']) {
+    //    sh "docker push ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER}"
+    //  }
+    //}
   }
 
   node("docker-stage") {
