@@ -21,7 +21,7 @@
         sh "docker ps -aq | xargs docker rm || true"
         sh "docker images -aq -f dangling=true | xargs docker rmi || true"
         sh '''
-            for img in $(docker images it/cd-demo | awk '{OFS=":"}{print \$1, \$2}' | grep -E '^it/cd\-demo');
+            for img in $(docker images it/cd-demo | awk '{OFS=":"}{print \$1, \$2}' | grep -E '^it/cd-demo');
             do 
              docker rmi $img 
             done
