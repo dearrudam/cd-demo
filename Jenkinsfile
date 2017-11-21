@@ -100,7 +100,7 @@
         sh '''
             for img in $(docker images ${DOCKERHUB_USERNAME}/cd-demo | awk '{OFS=":"}{print \$1, \$2}' | grep -E ':[0-9]{1,}$');
             do 
-              if [[ "$img" != "${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER}" ]]; then
+              if [[ "$img" != "${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER}" ]]; then
                 docker rmi $img
               fi
             done
