@@ -21,22 +21,22 @@
         sh "docker ps -aq | xargs docker rm || true"
         sh "docker images -aq -f dangling=true | xargs docker rmi || true"
         sh '''
-            for img in `docker images it/cd-demo | awk '{OFS=":"}{print $1, $2}'`;
+            for img in $(docker images it/cd-demo | awk '{OFS=":"}{print \$1, \$2}');
             do 
              docker rmi $img 
-            done" 
+            done
            '''
       }
     }
     stage("Build Dev version") {
       sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER} ."
       sh '''
-            for img in $(docker images ${DOCKERHUB_USERNAME}/cd-demo | awk '{OFS=":"}{print $1, $2}' | grep -E ':dev.[0-9]{1,}$');
+            for img in $(docker images ${DOCKERHUB_USERNAME}/cd-demo | awk '{OFS=":"}{print \$1, \$2}' | grep -E ':dev.[0-9]{1,}$');
             do 
               if [[ "$img" != "${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER}" ]]; then
                 docker rmi $img
               fi
-            done" 
+            done 
          '''
     }
     //stage("Publish") {
@@ -66,12 +66,12 @@
     stage("Build Prod Version") {
       sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER} ."
       sh '''
-            for img in $(docker images ${DOCKERHUB_USERNAME}/cd-demo | awk '{OFS=":"}{print $1, $2}' | grep -E ':[0-9]{1,}$');
+            for img in $(docker images ${DOCKERHUB_USERNAME}/cd-demo | awk '{OFS=":"}{print \$1, \$2}' | grep -E ':[0-9]{1,}$');
             do 
               if [[ "$img" != "${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER}" ]]; then
                 docker rmi $img
               fi
-            done" 
+            done
          '''
     }
   }
