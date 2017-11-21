@@ -22,8 +22,8 @@
         sh "docker images -aq -f dangling=true | xargs docker rmi || true"
       }
     }
-    stage("Build") {
-      sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER} ."
+    stage("Build Dev version") {
+      sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER} ."
     }
     //stage("Publish") {
     //  withDockerRegistry([credentialsId: 'DockerHub']) {
@@ -37,17 +37,20 @@
 
     stage("Staging") {
       try {
-        sh "docker rm -f cd-demo || true"
-        sh "docker run -d -p 8080:8080 --name=cd-demo ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER}"
-        sh "docker run --rm -v ${WORKSPACE}:/go/src/cd-demo --link=cd-demo -e SERVER=cd-demo golang go test cd-demo -v"
+        sh "docker rm -f st_cd-demo_${BUILD_NUMBER} || true"
+        sh "docker run -d --name=st_cd-demo_${BUILD_NUMBER} ${DOCKERHUB_USERNAME}/cd-demo:dev.${BUILD_NUMBER}"
+        sh "docker run --rm -v ${WORKSPACE}:/go/src/cd-demo --link=st_cd-demo_${BUILD_NUMBER} -e SERVER=st_cd-demo_${BUILD_NUMBER} golang go test cd-demo -v"
 
       } catch(e) {
         error "Staging failed"
       } finally {
-        sh "docker rm -f cd-demo || true"
+        sh "docker rm -f st_cd-demo_${BUILD_NUMBER} || true"
         sh "docker ps -aq | xargs docker rm || true"
         sh "docker images -aq -f dangling=true | xargs docker rmi || true"
       }
+    }
+    stage("Build Prod Version") {
+      sh "docker build -t ${DOCKERHUB_USERNAME}/cd-demo:${BUILD_NUMBER} ."
     }
   }
 
